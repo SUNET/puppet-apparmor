@@ -61,7 +61,6 @@ define apparmor::profile (
   $post_cmd     = undef,
 ) {
 
-  require apparmor
   $apparmor_d = $apparmor::apparmor_d
 
   if ($local_only == true) {
