@@ -36,7 +36,6 @@ class apparmor (
 
   if $package_manage {
     ensure_resource('package','apparmor', { ensure => present })
-    Package['apparmor'] -> File['apparmor.d','apparmor.d.local']
   }
 
   if $service_manage {
