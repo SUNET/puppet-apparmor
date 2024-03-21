@@ -20,17 +20,32 @@
 #
 # === Authors
 #
-# Simon Deziel <simon.deziel@gmail.com>
+# Simon Deziel <simon@sdeziel.info>
 #
 # === Copyright
 #
-# Copyright 2012 Simon Deziel
+# Copyright 2012-2020 Simon Deziel
 #
-class apparmor {
+class apparmor (
+  Boolean $package_manage       = true,
+  String  $service_ensure       = 'running',
+  Boolean $service_manage       = true,
+  String  $profile_default_base = "puppet:///modules/apparmor/aa-profiles/${::lsbdistrelease}",
+  Hash    $profiles             = {},
+) {
 
-  ensure_resource('package','apparmor', { ensure => present })
-  ensure_resource('service','apparmor', { ensure => running })
+  if $package_manage {
+    ensure_resource('package','apparmor', { ensure => present })
+    Package['apparmor'] -> File['apparmor.d','apparmor.d.local']
+  }
 
+  if $service_manage {
+    ensure_resource('service','apparmor', { ensure => $service_ensure })
+    service { 'apparmor':
+      ensure  => $service_ensure,
+      require => File['apparmor.d','apparmor.d.local'],
+    }
+  }
   $apparmor_d = '/etc/apparmor.d'
   ensure_resource('file','apparmor.d', {
     ensure  => directory,
@@ -49,4 +64,6 @@ class apparmor {
     mode    => '0755',
     require => Package['apparmor'],
   })
+
+  create_resources('apparmor::profile',$profiles)
 }
