@@ -41,10 +41,6 @@ class apparmor (
 
   if $service_manage {
     ensure_resource('service','apparmor', { ensure => $service_ensure })
-    service { 'apparmor':
-      ensure  => $service_ensure,
-      require => File['apparmor.d','apparmor.d.local'],
-    }
   }
   $apparmor_d = '/etc/apparmor.d'
   ensure_resource('file','apparmor.d', {
